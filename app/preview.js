@@ -10,7 +10,7 @@ define(function(require) {
             iframe = iframe.contentWindow || (iframe.contentDocument.document || iframe.contentDocument);
             iframe.document.open();
             iframe.document.write(obj.preview_head);
-            iframe.document.write('<script>' + data + '</script>');
+            iframe.document.write(data);
             iframe.document.close();
 
         },

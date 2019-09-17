@@ -5,7 +5,7 @@ define(function(require) {
     //require('bootstrap.min');require('css!assets/css/bootstrap.min');
     require('jquery-resizable');
     var app = {        
-        menu_items:require('git-folder!get-content!repos/emupedia/emupedia.github.io/tree/master/beta/emuos/vfat/apps/sandbox?ref=master'),
+        menu_items:require('git-folder!get-content!repos/Emupedia/emupedia.github.io/contents/beta/emuos/vfat/apps/sandbox?ref=master'),
         debug: require('print'),
         editor: require('./editor'),
         preview: require('./preview'),
