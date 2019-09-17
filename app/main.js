@@ -21,7 +21,7 @@ define(function(require) {
             };
             let url_params = new URLSearchParams(window.location.search);
             for (var n in app.config) if(url_params.has(n)) app.config[n] = url_params.getAll(n);  
-            app.debug(app.config);
+            //app.debug(app.config);
             
             let menu_url = 'git-folder!get-content!repos/' + app.config.repo;
             if (app.config.repo) require([menu_url],function(data){
