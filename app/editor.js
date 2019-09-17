@@ -23,7 +23,7 @@ define(function(require) {
                 obj.editor = monaco.editor.create(obj.editor_selector, {
                     value: '',
                     theme: 'vs-dark',
-                    language: 'javascript',
+                    language: 'html',
                     scrollBeyondLastColumn: true,
                     scrollBeyondLastLine: true,
 
