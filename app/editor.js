@@ -1,6 +1,6 @@
 define(function(require) {
     var monaco = require('vs/editor/editor.main');
-    var $ = require('jquery');
+    //var $ = require('jquery');
     var obj = {
         editor: false,
         dom_object: require('./dom_object'),

@@ -4,14 +4,25 @@ define(function(require) {
     //require('css!assets/css/jquery-ui');require('jquery-ui.min');        
     //require('bootstrap.min');require('css!assets/css/bootstrap.min');
     require('jquery-resizable');
-    var app = {        
-        menu_items:require('git-folder!get-content!repos/Emupedia/emupedia.github.io/contents/beta/emuos/vfat/apps/sandbox?ref=master'),
+    var app = {                
         debug: require('print'),
         editor: require('./editor'),
         preview: require('./preview'),
-        on_editor_change: function() {
-            var val = app.editor.getValue();
-            app.preview.setValue(val);
+        current_item_data:['','',''],
+        on_editor_change: function() {            
+            app.current_item_data[1] = app.editor.getValue();
+            if(!app.no_preview) app.preview.setValue(app.current_item_data.join(''),app.config);
+        },
+        init_config:function(){
+            app.config={
+                baseurl:false,
+                repo:'Emupedia/emupedia.github.io/contents/beta/emuos/vfat/apps/sandbox?ref=master',
+                capsule:['<body>','</body>'],
+            };
+            let url_params = new URLSearchParams(window.location.search);
+            for (var n in app.config) if(url_params.has(n)) app.config[n] = url_params.getAll(n);  
+            app.debug(app.config)          
+            return app;
         },
         init_editor: function() {
             app.editor.on_change = app.on_editor_change;
@@ -28,13 +39,47 @@ define(function(require) {
                     app.editor.layout();                    
                 }
             });
+            return app;
         },
         show_active_menu_item:function(){
-            var item = $('.menu-item.active').data('item');
-            app.editor.setValue(app.menu_items[item].content);
+            let item = $('.menu-item.active').data('item');
+            let ov = tmp_val = app.menu_items[item].content;            
+            app.current_item_data = [];
+            if(app.config.capsule && Array.isArray(app.config.capsule)){                
+                for (let i in app.config.capsule){
+                    let capsule_item = app.config.capsule[i];
+                    let tmp_index = tmp_val.indexOf(capsule_item);
+                    if (tmp_index !==-1){
+                        if (i==0) tmp_index += capsule_item.length;
+                        app.current_item_data.push(tmp_val.substring(0,tmp_index));
+                        tmp_val = tmp_val.substring(tmp_index);                        
+                    }
+                }                
+                app.current_item_data.push(tmp_val);
+            }
+            if (app.current_item_data.length<1){
+                app.current_item_data = ['',ov,''];
+            }
+            
+            app.current_item_data[1] = app.current_item_data[1].split('\t\t').join('\t');
+            app.current_item_data[1] = app.current_item_data[1].split('\t\t').join('~T2~');
+            app.current_item_data[1] = app.current_item_data[1].split('\t\t\t').join('~T3~');
+            app.current_item_data[1] = app.current_item_data[1].split('\t\t\t\t').join('~T4~');
+            app.current_item_data[1] = app.current_item_data[1].split('\t\t\t\t\t').join('~T5~');
+            app.current_item_data[1] = app.current_item_data[1].split('\t').join('');
+            app.current_item_data[1] = app.current_item_data[1].split('~T2~').join('\t');
+            app.current_item_data[1] = app.current_item_data[1].split('~T3~').join('\t\t');
+            app.current_item_data[1] = app.current_item_data[1].split('~T4~').join('\t\t\t');
+            app.current_item_data[1] = app.current_item_data[1].split('~T5~').join('\t\t\t\t');
+
+
+            app.no_preview = true;
+            app.editor.setValue(app.current_item_data[1]);
+            app.no_preview = false;
             app.editor.do_action('Format Document');
         },
-        init_menu:function(){                    
+        init_menu:function(){                                   
+            app.menu_items = require('git-folder!get-content!repos/Emupedia/emupedia.github.io/contents/beta/emuos/vfat/apps/sandbox?ref=master');
             for (var n in app.menu_items){                                            
                 $('#menu').append('<div class="menu-item" data-item="'+n+'">'+app.menu_items[n].name+'</div>');
             }            
@@ -45,11 +90,13 @@ define(function(require) {
             });
             $($('.menu-item').get(0)).addClass('active');
             app.show_active_menu_item();
+            return app;
         },
         init: function() {
-            app.init_menu();
-            app.init_resize();
-            app.init_editor();            
+            app.init_config()
+                .init_menu()
+                .init_resize()
+                .init_editor();            
             app.debug("App Init Ok");            
         }
     };
