@@ -16,12 +16,19 @@ define(function(require) {
         init_config:function(){
             app.config={
                 baseurl:false,
-                repo:'Emupedia/emupedia.github.io/contents/beta/emuos/vfat/apps/sandbox?ref=master',
-                capsule:['<body>','</body>'],
+                repo:false,
+                capsule:false,
             };
             let url_params = new URLSearchParams(window.location.search);
             for (var n in app.config) if(url_params.has(n)) app.config[n] = url_params.getAll(n);  
-            app.debug(app.config)          
+            app.debug(app.config);
+            
+            let menu_url = 'git-folder!get-content!repos/' + app.config.repo;
+            if (app.config.repo) require([menu_url],function(data){
+                app.menu_items = data;
+                app.init_menu();
+            });
+            
             return app;
         },
         init_editor: function() {
@@ -79,7 +86,6 @@ define(function(require) {
             app.editor.do_action('Format Document');
         },
         init_menu:function(){                                   
-            app.menu_items = require('git-folder!get-content!repos/Emupedia/emupedia.github.io/contents/beta/emuos/vfat/apps/sandbox?ref=master');
             for (var n in app.menu_items){                                            
                 $('#menu').append('<div class="menu-item" data-item="'+n+'">'+app.menu_items[n].name+'</div>');
             }            
@@ -93,8 +99,7 @@ define(function(require) {
             return app;
         },
         init: function() {
-            app.init_config()
-                .init_menu()
+            app.init_config()                
                 .init_resize()
                 .init_editor();            
             app.debug("App Init Ok");            
